@@ -26,20 +26,23 @@ app.get("/api/notes", function(req, res) {
     res.json(db)
 });
 
-var i = 1;
-
 app.post("/api/notes", function(req, res) {
-    req.body.id = i++
+    req.body.id = Date.now();
     db.push(req.body);
     fs.writeFileSync("../develop/db/db.json", JSON.stringify(db));
     res.json(req.body);
 });
 
 app.delete("/api/notes/:id", function(req, res) {
-    db.splice(req.params.id, 1);
-    console.log(req.params.id); 
-    fs.writeFileSync("../develop/db/db.json", JSON.stringify(db));
-    res.status(200).end();
+    var chosen = parseInt(req.params.id);
+    for (var i = 0; i < db.length; i++) {
+        if (chosen === db[i].id) {
+            console.log(db[i]);
+            db.splice(i, 1);
+            fs.writeFileSync("../develop/db/db.json", JSON.stringify(db));
+            return res.status(200).end();
+        }
+    }
 });
 
 //Set the PORT up to listen
